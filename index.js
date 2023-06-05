@@ -7,7 +7,10 @@ import categoryRoutes from "./routes/categoryRoutes.js"
 import productRoutes from "./routes/productRoutes.js"
 import bodyParser from "body-parser";
 import cors from "cors"
+
 const app = express()
+
+
 
 
 app.use(cors())
@@ -31,6 +34,9 @@ app.get('/', (req, res) => {
 })
 
 const PORT = process.env.PORT || 8000;
+
+
+
 
 //database config
 connectDB();
