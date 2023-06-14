@@ -13,6 +13,10 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "users",
     },
+    address: {
+      type: mongoose.ObjectId,
+      ref: "address",
+    },
     status: {
       type: String,
       default: "Not Process",

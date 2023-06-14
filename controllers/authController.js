@@ -1,5 +1,6 @@
 import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import orderModel from "../models/orderModel.js";
+import transactionModel from "../models/transactionModel.js";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 export const registerController = async (req, res) => {
@@ -205,7 +206,8 @@ export const getOrdersController = async (req, res) => {
     const orders = await orderModel
       .find({ buyer: req.user._id })
       .populate("products", "-photo")
-      .populate("buyer", "name");
+      .populate("buyer", "name")
+      .populate("address", "name");
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -224,6 +226,7 @@ export const getAllOrdersController = async (req, res) => {
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
+      .populate("address", "name")
       .sort({ createdAt: "-1" });
     res.json(orders);
   } catch (error) {
@@ -253,6 +256,115 @@ export const orderStatusController = async (req, res) => {
       success: false,
       message: "Error While Updating Order",
       error,
+    });
+  }
+};
+
+
+export const getAllUsersController = async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while getting users",
+      error,
+    });
+  }
+};
+
+/// Delete a user by ID
+export const deleteUserByIdController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const deletedUser = await userModel.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while deleting user",
+      error,
+    });
+  }
+};
+
+
+// Make a user an admin by ID
+export const makeUserAdminByIdController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { role: 1 },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(updatedUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while making user an admin",
+      error,
+    });
+  }
+};
+
+
+
+//chart
+export const getTransactionsController = async (req, res) => {
+  try {
+    const { transId } = req.params;
+
+    // Fetch the transaction details using the transaction ID
+    const transaction = await transactionModel.findOne({ id: transId });
+
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+      });
+    }
+
+    // Calculate total sales volume
+    const totalSalesVolume = await transactionModel.aggregate([
+      {
+        $match: {
+          status: "Completed",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const salesVolume = totalSalesVolume[0].totalSales || 0;
+
+    // Add total sales volume to the transaction response
+    const response = {
+      transaction,
+      salesVolume,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while retrieving transaction details",
+      error: error.message,
     });
   }
 };

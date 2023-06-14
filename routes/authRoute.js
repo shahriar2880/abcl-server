@@ -1,5 +1,5 @@
 import express from "express";
-import { forgotPasswordController, getAllOrdersController, getOrdersController, loginController, registerController, testController, updateProfileController,orderStatusController } from "../controllers/authController.js";
+import { forgotPasswordController, getAllOrdersController, getOrdersController, loginController, registerController, testController, updateProfileController,orderStatusController, getTransactionsController, getAllUsersController, deleteUserByIdController, makeUserAdminByIdController } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middleware/authMiddleware.js";
 
 //router object
@@ -37,5 +37,18 @@ router.get('/orders', requireSignIn, getOrdersController)
 router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
 
 // order status update
-router.put("/order-status/:orderId",requireSignIn,isAdmin,orderStatusController);
+router.put("/order-status/:orderId", requireSignIn, isAdmin, orderStatusController);
+
+//all users
+router.get("/users", requireSignIn, isAdmin, getAllUsersController);
+
+// user status update
+router.delete("/users/:userId", requireSignIn, isAdmin, deleteUserByIdController);
+
+// user status update
+router.put("/users/:userId/make-admin", requireSignIn, isAdmin, makeUserAdminByIdController);
+
+//order chart
+router.get("/transactions/:transId", requireSignIn, isAdmin, getTransactionsController);
+
 export default router;

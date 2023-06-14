@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createProductController, deleteProductController, getProductController, getSingleProductController, productPhotoController, updateProductController, productFilterController,productCountController, productListController, searchProductController, relatedProductController, productCategoryController, brainTreePaymentController, braintreeTokenController} from "../controllers/productController.js";
+  createProductController, deleteProductController, getProductController, getSingleProductController, getProductQuantityById, updateProductController, productPhotoController, productFilterController, updateProductQuantityController, productCountController, productListController, searchProductController, relatedProductController, productCategoryController, braintreeTokenController, brainTreePaymentController} from "../controllers/productController.js";
 import { isAdmin, requireSignIn } from "../middleware/authMiddleware.js";
 import formidable from "express-formidable";
 
@@ -17,6 +17,8 @@ router.get("/get-product", getProductController);
 //single product
 router.get("/get-product/:slug", getSingleProductController);
 
+router.get("/get-product-quantity/:pid", getProductQuantityById)
+
 //get photo
 router.get("/product-photo/:pid", productPhotoController);
 
@@ -25,6 +27,9 @@ router.delete("/delete-product/:pid", deleteProductController);
 
 //filter product
 router.post("/filters-product", productFilterController);
+
+
+router.post("/update-product-quantity/:pid", updateProductQuantityController);
 
 //product count
 router.get("/product-count", productCountController);
