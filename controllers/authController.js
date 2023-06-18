@@ -319,6 +319,27 @@ export const makeUserAdminByIdController = async (req, res) => {
   }
 };
 
+export const submitContactForm = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    // Create a new contact instance
+    const contact = new contactModel({
+      name,
+      email,
+      message,
+    });
+
+    // Save the contact to the database
+    await contact.save();
+
+    res.status(201).json({ message: 'Contact form submitted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while submitting the contact form' });
+  }
+};
+
 
 
 //chart

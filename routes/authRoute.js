@@ -2,7 +2,7 @@ import express from "express";
 import {
     forgotPasswordController, getAllOrdersController, getOrdersController, loginController,
     registerController, testController, updateProfileController, orderStatusController, getTransactionsController,
-    getAllUsersController, deleteUserByIdController, makeUserAdminByIdController
+    getAllUsersController, deleteUserByIdController, makeUserAdminByIdController, submitContactForm
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middleware/authMiddleware.js";
 
@@ -29,7 +29,10 @@ router.get("/user-auth", requireSignIn, (req, res) => {
 //protected Admin route
 router.get("/admin-auth", requireSignIn,isAdmin, (req, res) => {
     res.status(200).send({ok: true})
-} )
+})
+
+// Define the contact form submission route
+router.post('/contact', requireSignIn, submitContactForm );
 
 //update profile
 router.put("/profile", requireSignIn, updateProfileController);
